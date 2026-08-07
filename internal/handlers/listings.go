@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -52,5 +53,23 @@ func List(db *sql.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 
 		_ = json.NewEncoder(w).Encode(listings)
+	}
+}
+
+func DeleteListing(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Delete
+		id := r.PathValue("id")
+		fmt.Println("id", id)
+
+		_, err := db.Exec(
+			`DELETE FROM listings WHERE id = $1`, id)
+		if err != nil {
+			log.Printf("delete: %v", err)
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+		w.Write([]byte("okk"))
 	}
 }
