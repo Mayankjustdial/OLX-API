@@ -3,11 +3,12 @@ package handlers
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/codersgyan/olx-api/internal/middlerware"
 )
 
 type listing struct {
@@ -78,9 +79,10 @@ func (lh ListingHandler) List(w http.ResponseWriter, r *http.Request) {
 func (lh ListingHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	// Delete
 	ctx := r.Context()
+	requestId := middlerware.RequestIDFromContext(ctx)
+	// requestId := ctx.Value("requestCtxId").(string)
 
 	id := r.PathValue("id")
-	fmt.Println("id", id)
 
 	// lh.logger.Debug("debug log", "listing_id", id)
 	// lh.logger.Info("starting query", "listing_id", id)
@@ -90,7 +92,7 @@ func (lh ListingHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		`DELETE FROM listings WHERE id = $1`, id)
 	if err != nil {
 		// log.Printf("delete: %v", err)
-		lh.logger.Error("delete failed", "Listing_id", id, "err", err)
+		lh.logger.Error("delete failed", "Listing_id", id, "request_id", requestId, "err", err)
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
