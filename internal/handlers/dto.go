@@ -32,5 +32,24 @@ func (req CreateListingRequest) Validate() error {
 	if strings.TrimSpace(req.Title) == "" {
 		return &ValidationError{Field: "title", Msg: "must not be empty"}
 	}
+	if len(req.Title) > 20 {
+		return &ValidationError{Field: "title", Msg: "must be at most 20"}
+	}
+	if strings.TrimSpace(req.Description) == "" {
+		return &ValidationError{Field: "description", Msg: "must not be empty"}
+	}
+
+	if len(req.Description) > 200 {
+		return &ValidationError{Field: "description", Msg: "must be at most 200"}
+	}
+
+	if req.Price <= 0 {
+		return &ValidationError{Field: "price", Msg: "must be greater than 0"}
+	}
+
+	if strings.TrimSpace(req.City) == "" {
+		return &ValidationError{Field: "city", Msg: "must not be empty"}
+	}
+
 	return nil
 }
