@@ -35,6 +35,7 @@ func main() {
 	fmt.Println("<><><>starting olx server<><><>")
 
 	lh := handlers.NewListingHandler(db, logger)
+	ah := handlers.NewAuthHandler(db, logger)
 
 	mux := http.NewServeMux()
 
@@ -42,6 +43,7 @@ func main() {
 	mux.HandleFunc("GET /listings", lh.List)
 	mux.HandleFunc("DELETE /listings/{id}", lh.Delete)
 	mux.HandleFunc("POST /listings", lh.Create)
+	mux.HandleFunc("POST /signup", ah.Signup)
 
 	handler := middlerware.RequestId(mux)
 	srv := http.Server{
