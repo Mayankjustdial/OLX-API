@@ -17,6 +17,16 @@ type SignupResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type SigninRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type SigninResponse struct {
+	Token     string
+	ExpiresIn int
+}
+
 func (req SignupRequest) Validate() error {
 	if strings.TrimSpace(req.Name) == "" {
 		return &ValidationError{Field: "name", Msg: "must not be empty"}
@@ -31,5 +41,13 @@ func (req SignupRequest) Validate() error {
 		return &ValidationError{Field: "password", Msg: "must not be at least 8 charater"}
 	}
 
+	return nil
+}
+
+func (req SigninRequest) Validate() error {
+	if _, err := mail.ParseAddress(req.Email); err != nil {
+		return &ValidationError{Field: "email", Msg: "must not be empty"}
+
+	}
 	return nil
 }
